@@ -1,0 +1,29 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Date Selector</mat-card-title>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content class='padding-date'>
+        <div>
+            <div class='span-date'>From</div>
+            <mat-form-field>
+                <input matInput [min]="minDate" [max]="endDate.value" [matDatepicker]="begin" [formControl]="beginDate">
+                <mat-datepicker-toggle matSuffix [for]="begin"></mat-datepicker-toggle>
+                <mat-datepicker #begin startView="multi-year" (yearSelected)="chosenBeginYearHandler($event)"
+                    (monthSelected)="chosenBeginMonthHandler($event, begin)">
+                </mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div>
+            <div class='span-date'>To</div>
+            <mat-form-field>
+                <input matInput [min]="beginDate.value" [max]="maxDate" [matDatepicker]="end" [formControl]="endDate">
+                <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                <mat-datepicker #end startView="multi-year" (yearSelected)="chosenEndYearHandler($event)"
+                    (monthSelected)="chosenEndMonthHandler($event, end)">
+                </mat-datepicker>
+            </mat-form-field>
+        </div>
+    </mat-card-content>
+
+</mat-card>
