@@ -6,7 +6,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 > The objective is to implement a simple data visualization application that must display the evolution of the online demand for a given selection of keywords (ie. the search volume).
 
-## How to launch the application
+## How to launch the application
 
 Once you have cloned the project, run the command `npm install` in the `analyzer-app/` directory to install all the dependencies needed for the project, then either run a development server, or build and deploy the application on one of your server (see below).
 
