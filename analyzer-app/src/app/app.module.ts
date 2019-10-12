@@ -16,6 +16,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatRippleModule } from '@angular/material/core';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 
 import { DataChartComponent } from './components/data-chart/data-chart.component';
 import { DateSelectorComponent } from './components/date-selector/date-selector.component';
@@ -23,6 +28,8 @@ import { DataViewComponent } from './components/data-view/data-view.component';
 import { ChartsModule } from 'ng2-charts';
 import { CategoryDisplayComponent } from './components/category-display/category-display.component';
 import { CategoryBlockComponent } from './components/category-block/category-block.component';
+import { CategoryTreeComponent } from './components/category-tree/category-tree.component';
+import { CategoryDialogComponent } from './components/category-dialog/category-dialog.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +38,9 @@ import { CategoryBlockComponent } from './components/category-block/category-blo
     DateSelectorComponent,
     DataViewComponent,
     CategoryDisplayComponent,
-    CategoryBlockComponent
+    CategoryBlockComponent,
+    CategoryTreeComponent,
+    CategoryDialogComponent
   ],
   imports: [
     HttpClientModule,
@@ -50,8 +59,14 @@ import { CategoryBlockComponent } from './components/category-block/category-blo
     ReactiveFormsModule,
     MatCardModule,
     MatGridListModule,
-    MatDividerModule
+    MatDividerModule,
+    MatIconModule,
+    MatButtonModule,
+    MatListModule,
+    MatRippleModule,
+    MatBottomSheetModule
   ],
+  entryComponents: [ CategoryTreeComponent ],
   providers: [
     MatDatepickerModule,
   ],

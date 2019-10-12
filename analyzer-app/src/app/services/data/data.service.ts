@@ -146,6 +146,11 @@ export class DataService {
     this.updateData();
   }
 
+  updateCategory(category: Category) {
+    this.currentCategorySource.next(category);
+    this.updateData();
+  }
+
   getColorByCategory(category: Category): Color {
     /* While there is only one category, return the first color of lineChartColors. 
     With multiple colors, find position of Category in the array of current categories, 

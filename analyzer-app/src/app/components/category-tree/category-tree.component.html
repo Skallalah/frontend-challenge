@@ -1,0 +1,30 @@
+<ng-template [ngIf]="currentNode != null && currentCategory != null">
+    <mat-action-list>
+        <div *ngIf="hasNodeParent(); then parentBlock else noParentBlock"></div>
+        <ng-template #parentBlock>
+            <button mat-list-item (click)="goToParent()">
+                <mat-icon>keyboard_arrow_left</mat-icon>
+            </button>
+        </ng-template>
+        <ng-template #noParentBlock>
+            <button *ngIf="isNotSelectionable(rootNode)" mat-list-item class="existing-category"> All categories
+            </button>
+            <button *ngIf="!isNotSelectionable(rootNode)" mat-list-item (click)="selectedNode(rootNode)"> All categories
+            </button>
+        </ng-template>
+
+        <ng-container *ngFor="let node of currentNode.children">
+            <mat-list-item disableRipple="true">
+                <button *ngIf="isNotSelectionable(node)" mat-list-item class="existing-category"> {{node.name}}
+                </button>
+                <button *ngIf="!isNotSelectionable(node)" mat-list-item (click)="selectedNode(node)"> {{node.name}}
+                </button>
+                <ng-template [ngIf]="node.children.length > 0">
+                    <button mat-icon-button (click)="nextCategoryNode(node)">
+                        <mat-icon>keyboard_arrow_right</mat-icon>
+                    </button>
+                </ng-template>
+            </mat-list-item>
+        </ng-container>
+    </mat-action-list>
+</ng-template>
