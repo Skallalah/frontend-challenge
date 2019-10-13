@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CategoryDialogComponent } from './category-dialog.component';
+import { ChartAverageComponent } from './chart-average.component';
 
-describe('CategoryDialogComponent', () => {
-  let component: CategoryDialogComponent;
-  let fixture: ComponentFixture<CategoryDialogComponent>;
+describe('ChartAverageComponent', () => {
+  let component: ChartAverageComponent;
+  let fixture: ComponentFixture<ChartAverageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CategoryDialogComponent ]
+      declarations: [ ChartAverageComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CategoryDialogComponent);
+    fixture = TestBed.createComponent(ChartAverageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

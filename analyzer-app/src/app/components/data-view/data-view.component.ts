@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from 'src/app/services/data/data.service';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   selector: 'app-data-view',
@@ -7,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DataViewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private dataService: DataService, private apiService: ApiService) { }
 
   ngOnInit() {
+    this.apiService.getCategories().subscribe(data => this.dataService.applyCategory(data));
   }
 
 }

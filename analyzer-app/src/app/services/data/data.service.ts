@@ -17,8 +17,14 @@ export class DataService {
   private dataSource: BehaviorSubject<Array<ChartDataSets>> = new BehaviorSubject([{}]);
   data = this.dataSource.asObservable();
 
+  private averageDataSource: BehaviorSubject<Array<ChartDataSets>> = new BehaviorSubject([{}]);
+  averageData = this.averageDataSource.asObservable();
+
   private dateSource: BehaviorSubject<Array<string>> = new BehaviorSubject([]);
   date = this.dateSource.asObservable();
+
+  private averageDateSource: BehaviorSubject<Array<string>> = new BehaviorSubject([]);
+  averageDate = this.averageDateSource.asObservable();
 
   private beginningDateSource: BehaviorSubject<Date> = new BehaviorSubject(moment().subtract(1, 'year').toDate());
   beginningDate = this.beginningDateSource.asObservable();
@@ -117,13 +123,30 @@ export class DataService {
     });
   }
 
-  /* Initialize chart data, by checking for each volume if it is inside the selected period. */
+  /* Initialize chart data, for both average and classic data, 
+  by checking for each volume if it is inside the selected period.
+  For the average data, it will check if a similar period exist
+  by verifying if the beginning minus one year has a month available. */
   private initializeData(data: Volume[], beginDate: Date, endingDate: Date) {
     let set = new Array<ChartDataSets>();
     let dateSet = new Array<string>();
     let numbers = new Array<number>();
+    let oneYearBeforeNumbers = new Array<number>();
+
+    const oneYearBeforePeriodAvailable = data.find(value => moment(beginDate)
+      .subtract(1, 'year').isSame(value.timespan, 'month')) != undefined;
 
     data.forEach((volume: Volume) => {
+
+      /* Add date if in the one year prior period */
+      if (oneYearBeforePeriodAvailable) {
+        if (moment(volume.timespan).isSameOrAfter(moment(beginDate).subtract(1, 'year'))
+          && moment(volume.timespan).isSameOrBefore(moment(endingDate).subtract(1, 'year'))) {
+          oneYearBeforeNumbers.push(volume.volume);
+        }
+      }
+
+      /* Add data to the evolution dataset */
       if (moment(volume.timespan).isSameOrAfter(beginDate)
         && moment(volume.timespan).isSameOrBefore(endingDate)) {
         numbers.push(volume.volume);
@@ -134,6 +157,36 @@ export class DataService {
 
     this.dataSource.next(set);
     this.dateSource.next(dateSet);
+
+    console.log("FINALLY");
+
+    /* Update with the current average data with the calculated data */
+    if (oneYearBeforePeriodAvailable) {
+      const avrgThisYear = Math.round(this.getAverage(numbers));
+      const avrgOneYearPrior = Math.round(this.getAverage(oneYearBeforeNumbers));
+      this.averageDataSource.next([{
+        data: [avrgOneYearPrior, avrgThisYear],
+        label: this.currentCategorySource.value.name
+      }]);
+
+      const avrgThisPeriod = this.getPeriodString(beginDate, endingDate);
+      const avrgOneYearPeriod = this.getPeriodString(moment(beginDate).subtract(1, 'year').toDate(),
+        moment(endingDate).subtract(1, 'year').toDate());
+      this.averageDateSource.next([avrgOneYearPeriod, avrgThisPeriod]);
+    }
+    else {
+      this.averageDataSource.next([]);
+      this.averageDateSource.next([]);
+    }
+  }
+
+  private getAverage(volumes: number[]): number {
+    return volumes.reduce((a, b) => { return a + b }) / volumes.length;
+  }
+
+  
+  private getPeriodString(firstDate: Date, secondDate: Date): string {
+    return moment(firstDate).format("MMM YYYY") + " - " + moment(secondDate).format("MMM YYYY")
   }
 
   updateBeginningDate(newDate: Date) {

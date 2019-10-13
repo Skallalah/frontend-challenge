@@ -1,1 +1,16 @@
-<p>data-view works!</p>
+<mat-card>
+    <mat-card-content>
+        <mat-tab-group>
+            <mat-tab label="Evolution">
+                <ng-template matTabContent>
+                    <app-data-chart></app-data-chart>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Average">
+                <ng-template matTabContent>
+                    <app-chart-average></app-chart-average>
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </mat-card-content>
+</mat-card>

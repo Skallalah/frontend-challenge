@@ -1,13 +1,4 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Evolution</mat-card-title>
-    </mat-card-header>
-    <mat-divider></mat-divider>
-    <mat-card-content class='padding-data'>
-        <div style="display: block;">
-            <canvas baseChart [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
-                [colors]="lineChartColors" [chartType]="lineChartType"
-                [plugins]="lineChartPlugins"></canvas>
-        </div>
-    </mat-card-content>
-</mat-card>
+<div style="display: block;" class='padding-data'>
+    <canvas baseChart [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
+        [colors]="lineChartColors" [chartType]="lineChartType" [plugins]="lineChartPlugins"></canvas>
+</div>

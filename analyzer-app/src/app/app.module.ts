@@ -21,26 +21,28 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { DataChartComponent } from './components/data-chart/data-chart.component';
 import { DateSelectorComponent } from './components/date-selector/date-selector.component';
-import { DataViewComponent } from './components/data-view/data-view.component';
 import { ChartsModule } from 'ng2-charts';
 import { CategoryDisplayComponent } from './components/category-display/category-display.component';
 import { CategoryBlockComponent } from './components/category-block/category-block.component';
 import { CategoryTreeComponent } from './components/category-tree/category-tree.component';
-import { CategoryDialogComponent } from './components/category-dialog/category-dialog.component';
+import { ChartAverageComponent } from './components/chart-average/chart-average.component';
+import { DataViewComponent } from './components/data-view/data-view.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     DataChartComponent,
     DateSelectorComponent,
-    DataViewComponent,
     CategoryDisplayComponent,
     CategoryBlockComponent,
     CategoryTreeComponent,
-    CategoryDialogComponent
+    ChartAverageComponent,
+    DataViewComponent,
   ],
   imports: [
     HttpClientModule,
@@ -64,9 +66,10 @@ import { CategoryDialogComponent } from './components/category-dialog/category-d
     MatButtonModule,
     MatListModule,
     MatRippleModule,
-    MatBottomSheetModule
+    MatBottomSheetModule,
+    MatTabsModule
   ],
-  entryComponents: [ CategoryTreeComponent ],
+  entryComponents: [CategoryTreeComponent],
   providers: [
     MatDatepickerModule,
   ],
