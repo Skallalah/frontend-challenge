@@ -1,0 +1,14 @@
+.center-div {
+    margin: 0 auto;
+    width: 25%;
+}
+
+.center-card {
+    position: absolute;
+    top: 33%;
+    width:25%;
+}
+
+.full-input {
+    width: 100%;
+}

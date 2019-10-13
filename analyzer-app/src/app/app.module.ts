@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -22,6 +22,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { DataChartComponent } from './components/data-chart/data-chart.component';
 import { DateSelectorComponent } from './components/date-selector/date-selector.component';
@@ -31,6 +33,11 @@ import { CategoryBlockComponent } from './components/category-block/category-blo
 import { CategoryTreeComponent } from './components/category-tree/category-tree.component';
 import { ChartAverageComponent } from './components/chart-average/chart-average.component';
 import { DataViewComponent } from './components/data-view/data-view.component';
+import { LoginViewComponent } from './components/login-view/login-view.component';
+import { DashboardViewComponent } from './components/dashboard-view/dashboard-view.component';
+import { TokenInterceptor } from './guard/token-interceptor/token-interceptor.service';
+import { MockBackendInterceptor } from './mock_backend/mock-backend-interceptor.service';
+import { MainToolbarComponent } from './components/main-toolbar/main-toolbar.component';
 
 
 @NgModule({
@@ -43,6 +50,9 @@ import { DataViewComponent } from './components/data-view/data-view.component';
     CategoryTreeComponent,
     ChartAverageComponent,
     DataViewComponent,
+    LoginViewComponent,
+    DashboardViewComponent,
+    MainToolbarComponent,
   ],
   imports: [
     HttpClientModule,
@@ -67,11 +77,15 @@ import { DataViewComponent } from './components/data-view/data-view.component';
     MatListModule,
     MatRippleModule,
     MatBottomSheetModule,
-    MatTabsModule
+    MatTabsModule,
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   entryComponents: [CategoryTreeComponent],
   providers: [
     MatDatepickerModule,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: MockBackendInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

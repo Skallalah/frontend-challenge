@@ -1,18 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ChartAverageComponent } from './components/chart-average/chart-average.component';
-import { DataChartComponent } from './components/data-chart/data-chart.component';
-import { DataViewComponent } from './components/data-view/data-view.component';
+import { LoginViewComponent } from './components/login-view/login-view.component';
+import { DashboardViewComponent } from './components/dashboard-view/dashboard-view.component';
+import { AuthGuard } from './guard/auth/auth.guard';
 
 
 const routes: Routes = [
-  { path: 'chart', component: DataViewComponent },
-  { path: 'average', component: ChartAverageComponent },
-  {
-    path: '',
-    redirectTo: '/chart',
-    pathMatch: 'full'
-  },
+  { path: 'login', component: LoginViewComponent },
+  { path: 'chart', component: DashboardViewComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({

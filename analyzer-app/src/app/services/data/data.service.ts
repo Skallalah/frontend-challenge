@@ -158,8 +158,6 @@ export class DataService {
     this.dataSource.next(set);
     this.dateSource.next(dateSet);
 
-    console.log("FINALLY");
-
     /* Update with the current average data with the calculated data */
     if (oneYearBeforePeriodAvailable) {
       const avrgThisYear = Math.round(this.getAverage(numbers));

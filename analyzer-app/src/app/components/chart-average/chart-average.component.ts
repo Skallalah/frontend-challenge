@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Label, Color } from 'ng2-charts';
 import { DataService } from 'src/app/services/data/data.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './chart-average.component.html',
   styleUrls: ['./chart-average.component.css']
 })
-export class ChartAverageComponent implements OnInit {
+export class ChartAverageComponent implements OnInit, OnDestroy {
 
   public barChartOptions: ChartOptions = {
     responsive: true,

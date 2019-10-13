@@ -1,0 +1,23 @@
+<div class="center-div">
+
+    <mat-card class="center-card">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline" class="full-input">
+                <mat-label>Username</mat-label>
+                <input matInput placeholder="" formControlName="username">
+                <mat-error *ngIf="loginForm.controls.username.invalid">Username is required</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-input" l>
+                <mat-label>Password</mat-label>
+                <input matInput placeholder="" [type]="hide ? 'password' : 'text'" formControlName="password">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hide">
+                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="loginForm.controls.password.invalid">Password is required</mat-error>
+            </mat-form-field>
+            <button mat-flat-button color="primary" style="float: right;" [disabled]="loading">Login</button>
+        </form>
+    </mat-card>
+
+</div>

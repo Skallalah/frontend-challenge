@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './data-chart.component.html',
   styleUrls: ['./data-chart.component.css']
 })
-export class DataChartComponent implements OnInit {
+export class DataChartComponent implements OnInit, OnDestroy {
 
   public lineChartData: ChartDataSets[] = [{}];
   public lineChartLabels: Label[] = [];

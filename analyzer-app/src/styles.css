@@ -71,3 +71,7 @@ body {
     clear: both;
     display: table;
 }
+
+.flex-spacer {
+    flex: 1 1 auto;
+}

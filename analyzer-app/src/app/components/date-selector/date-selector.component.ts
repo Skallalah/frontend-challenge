@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import * as moment from 'moment';
 import { DataService } from 'src/app/services/data/data.service';
+import { Subscription } from 'rxjs';
 
 export const MY_FORMATS = {
   parse: {
@@ -25,20 +26,22 @@ export const MY_FORMATS = {
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
   ],
 })
-export class DateSelectorComponent implements OnInit {
+export class DateSelectorComponent implements OnInit, OnDestroy {
 
   beginDate = new FormControl(moment());
   endDate = new FormControl(moment());
   maxDate: Date = new Date();
   minDate: Date = new Date();
+
+  subscriptions: Subscription;
   
   constructor(private dataService: DataService) { }
 
   ngOnInit() {
-    this.dataService.beginningDate.subscribe({ next: date => this.beginDate.setValue(moment(date)) });
-    this.dataService.endingDate.subscribe({ next: date => this.endDate.setValue(moment(date)) });
-    this.dataService.maxDate.subscribe({ next: date => this.maxDate = date });
-    this.dataService.minDate.subscribe({ next: date => this.minDate = date });
+    this.subscriptions = this.dataService.beginningDate.subscribe({ next: date => this.beginDate.setValue(moment(date)) });
+    this.subscriptions.add(this.dataService.endingDate.subscribe({ next: date => this.endDate.setValue(moment(date)) }));
+    this.subscriptions.add(this.dataService.maxDate.subscribe({ next: date => this.maxDate = date }));
+    this.subscriptions.add(this.dataService.minDate.subscribe({ next: date => this.minDate = date }));
   }
 
   chosenBeginYearHandler(normalizedYear: moment.Moment) {
@@ -69,6 +72,10 @@ export class DateSelectorComponent implements OnInit {
     this.endDate.setValue(ctrlValue);
     this.dataService.updateEndingDate(ctrlValue);
     datepicker.close();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
 }

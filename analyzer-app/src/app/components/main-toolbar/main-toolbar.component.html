@@ -1,0 +1,9 @@
+<mat-toolbar color="primary" class="main-navigation">
+    <span>Analyzer App</span>
+    <span class="flex-spacer"></span>
+    <span *ngIf="username != null" class="small-logout-text">Hello {{username}}
+        <button mat-icon-button (click)="disconnect()" matTooltip="Click to logout">
+            <mat-icon>exit_to_app</mat-icon>
+        </button>
+    </span>
+</mat-toolbar>
