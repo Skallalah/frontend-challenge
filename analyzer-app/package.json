@@ -3,12 +3,12 @@
   "version": "0.3.0",
   "scripts": {
     "ng": "ng",
-    "start": "cd ./analyzer-app && node server.js",
+    "start": "node server.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "cd ./analyzer-app && ng build --aot -prod"
+    "postinstall": "ng build --aot -prod"
   },
   "private": true,
   "dependencies": {
