@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { DataService } from 'src/app/services/data/data.service';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Category } from 'src/app/models/category/category';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Subscription } from 'rxjs';
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-category-tree',
@@ -12,7 +13,8 @@ import { Subscription } from 'rxjs';
 })
 export class CategoryTreeComponent implements OnInit, OnDestroy {
 
-  currentCategory: Category;
+  oldCategory: Category;
+  currentCategories: Category[];
   currentNode: Category;
   rootNode: Category;
   parentNodes: Category[] = [];
@@ -20,14 +22,16 @@ export class CategoryTreeComponent implements OnInit, OnDestroy {
   apiSubscription: Subscription;
   dataSubscription: Subscription;
 
-  constructor(private _bottomSheetRef: MatBottomSheetRef<CategoryTreeComponent>, private dataService: DataService, private apiService: ApiService) { }
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: any, private _bottomSheetRef: MatBottomSheetRef<CategoryTreeComponent>, private dataService: DataService, private apiService: ApiService) { 
+    this.oldCategory = data.category;
+  }
 
   ngOnInit() {
     this.apiSubscription = this.apiService.getRootCategory().subscribe(values => {
       this.currentNode = values;
       this.rootNode = values;
     });
-    this.dataSubscription = this.dataService.currentCategory.subscribe(value => this.currentCategory = value);
+    this.dataSubscription = this.dataService.currentCategory.subscribe(value => this.currentCategories = value);
   }
 
   hasNodeParent(): boolean {
@@ -39,7 +43,8 @@ export class CategoryTreeComponent implements OnInit, OnDestroy {
   }
 
   selectedNode(node: Category) {
-    this.dataService.updateCategory(node);
+    this.dataService.updateCategory(node, this.oldCategory);
+    this.oldCategory = node;
   }
 
   nextCategoryNode(node: Category) {
@@ -48,7 +53,7 @@ export class CategoryTreeComponent implements OnInit, OnDestroy {
   }
 
   isNotSelectionable(node: Category): boolean {
-    return this.currentCategory.id === node.id;
+    return this.currentCategories.find(x => x.id == node.id) != undefined;
   }
 
   ngOnDestroy() {

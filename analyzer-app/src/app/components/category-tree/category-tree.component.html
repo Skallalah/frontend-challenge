@@ -1,4 +1,4 @@
-<ng-template [ngIf]="currentNode != null && currentCategory != null">
+<ng-template [ngIf]="currentNode != null && currentCategories != null">
     <mat-action-list>
         <div *ngIf="hasNodeParent(); then parentBlock else noParentBlock"></div>
         <ng-template #parentBlock>

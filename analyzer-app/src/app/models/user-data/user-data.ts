@@ -1,17 +1,18 @@
 import { Category } from '../category/category';
 
 export class UserData {
-    currentCategory: Category;
+    currentCategories: Category[];
     beginDate: Date;
     endDate: Date;
 
     constructor(parsedData: any) {
-        this.currentCategory = parsedData.currentCategory;
+        this.currentCategories = parsedData.currentCategories;
         this.beginDate = parsedData.beginDate;
         this.endDate = parsedData.endDate;
     }
 
     public noMemberNull(): boolean {
-        return this.currentCategory != null && this.beginDate != null && this.endDate != null;
+        return this.currentCategories != null && this.currentCategories.length > 0
+            && this.beginDate != null && this.endDate != null;
     }
 }

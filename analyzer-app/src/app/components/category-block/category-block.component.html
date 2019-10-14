@@ -1,3 +1,11 @@
 <ng-container *ngFor="let category of categories">
     <app-category-display [category]="category" [color]="this.getColorByCategory(category)"></app-category-display>
 </ng-container>
+<div>
+    <button mat-raised-button *ngIf="categories != null && categories.length < 3">
+        <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="addCategory()">add</mat-icon>
+    </button>
+    <button mat-raised-button *ngIf="categories != null && categories.length > 1">
+        <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="removeCategory()">remove</mat-icon>
+    </button>
+</div>

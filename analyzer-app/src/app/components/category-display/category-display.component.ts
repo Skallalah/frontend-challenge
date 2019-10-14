@@ -21,7 +21,9 @@ export class CategoryDisplayComponent implements OnInit {
   }
 
   openCategorySelection() {
-    this._bottomSheet.open(CategoryTreeComponent);
+    this._bottomSheet.open(CategoryTreeComponent, {
+      data: { category: this.category },
+    });
   }
 
 }

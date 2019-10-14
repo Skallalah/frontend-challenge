@@ -8,6 +8,7 @@ import { ApiService } from '../api/api.service';
 import { Color } from 'ng2-charts';
 import { UserData } from 'src/app/models/user-data/user-data';
 import { User } from 'src/app/models/user/user';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,7 @@ export class DataService {
   private minDateSource: BehaviorSubject<Date> = new BehaviorSubject(new Date());
   minDate = this.minDateSource.asObservable();
 
-  private currentCategorySource: BehaviorSubject<Category> = new BehaviorSubject(null);
+  private currentCategorySource: BehaviorSubject<Category[]> = new BehaviorSubject([]);
   currentCategory = this.currentCategorySource.asObservable();
 
   /* Chart colors values */
@@ -54,22 +55,23 @@ export class DataService {
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(225,10,24,0.2)'
     },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: 'rgba(77,83,96,1)',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
+    { // blue
+      backgroundColor: 'rgb(176,224,230,0.2)',
+      borderColor: 'rgb(176,224,230)',
+      pointBackgroundColor: 'rgb(176,224,230,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+      pointHoverBorderColor: 'rgb(176,224,230,0.8)'
     },
-    { // red
-      backgroundColor: 'rgba(255,0,0,0.3)',
-      borderColor: 'red',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
+    { // green
+      backgroundColor: 'rgb(173,255,47,0.2)',
+      borderColor: 'rgb(173,255,47,1)',
+      pointBackgroundColor: 'rgb(173,255,47,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBorderColor: 'rgb(173,255,47,1)'
     }
+
   ];
 
   /* End of chart colors values */
@@ -82,14 +84,15 @@ export class DataService {
   initializeLaunchData(user: User) {
     const previousData = this.getPreviousUserData(user);
     if (previousData && previousData.noMemberNull()) {
-      console.log(previousData);
-      this.updateAvailableDates(previousData.currentCategory, previousData.beginDate, previousData.endDate);
-      this.currentCategorySource.next(previousData.currentCategory);
+      this.currentCategorySource.next(previousData.currentCategories);
+      this.updateAvailableDates(previousData.currentCategories, previousData.beginDate, previousData.endDate);
+
     }
     else {
       this.apiService.getRootCategory().subscribe(data => {
-        this.updateAvailableDates(data, this.beginningDateSource.getValue(), this.endingDateSource.getValue());
-        this.currentCategorySource.next(data)
+        this.currentCategorySource.next([data]);
+        this.updateAvailableDates([data], this.beginningDateSource.getValue(), this.endingDateSource.getValue());
+
       });
     }
   }
@@ -100,38 +103,42 @@ export class DataService {
 
   /* Check the availables dates from the current category, then apply those to the chart. 
   By default, it will selectioned the last 12 months from the last month available in the date. */
-  private updateAvailableDates(currentCategory: Category, beginningDate: Date, endingDate: Date) {
-    this.apiService.getDataByCategory(currentCategory.id).subscribe(
-      {
-        next: (data) => {
-          const maxDate = moment(data[data.length - 1].timespan).toDate();
-          const minDate = moment(data[0].timespan).toDate();
+  private updateAvailableDates(currentCategories: Category[], beginningDate: Date, endingDate: Date) {
+    let multipleRequest = [];
+    currentCategories.forEach(cat => multipleRequest.push(this.apiService.getDataByCategory(cat.id)));
+    forkJoin(multipleRequest).subscribe({
+      next: (arrOfData) => {
+        const data = arrOfData[0];
+        const maxDate = moment(data[data.length - 1].timespan).toDate();
+        const minDate = moment(data[0].timespan).toDate();
 
-          /* Check if the last timestamp is before today. If so, will select this one as last date and recalculate the first date.*/
-          if (moment(this.endingDateSource.getValue()).isAfter(maxDate)) {
-            endingDate = maxDate;
-            beginningDate = moment(maxDate).subtract(1, 'year').toDate();
-          }
-
-          /* Check if the the first date is available in the current data. If not, it will choose the first available date. */
-          if (moment(this.beginningDateSource.getValue()).isBefore(minDate)) {
-            beginningDate = minDate;
-          }
-
-          this.initializeData(data, beginningDate, endingDate);
-
-          this.endingDateSource.next(endingDate);
-          this.beginningDateSource.next(beginningDate);
-          this.maxDateSource.next(maxDate);
-          this.minDateSource.next(minDate);
+        /* Check if the last timestamp is before today. If so, will select this one as last date and recalculate the first date.*/
+        if (moment(this.endingDateSource.getValue()).isAfter(maxDate)) {
+          endingDate = maxDate;
+          beginningDate = moment(maxDate).subtract(1, 'year').toDate();
         }
-      });
+
+        /* Check if the the first date is available in the current data. If not, it will choose the first available date. */
+        if (moment(this.beginningDateSource.getValue()).isBefore(minDate)) {
+          beginningDate = minDate;
+        }
+
+        this.initializeData(arrOfData, beginningDate, endingDate);
+
+        this.endingDateSource.next(endingDate);
+        this.beginningDateSource.next(beginningDate);
+        this.maxDateSource.next(maxDate);
+        this.minDateSource.next(minDate);
+      }
+    });
   }
 
   private updateData() {
-    this.apiService.getDataByCategory(this.currentCategorySource.value.id).subscribe({
-      next: (data) => {
-        this.initializeData(data, this.beginningDateSource.getValue(), this.endingDateSource.getValue());
+    let multipleRequest = [];
+    this.currentCategorySource.getValue().forEach(cat => multipleRequest.push(this.apiService.getDataByCategory(cat.id)));
+    forkJoin(multipleRequest).subscribe({
+      next: (arrOfData) => {
+        this.initializeData(arrOfData, this.beginningDateSource.getValue(), this.endingDateSource.getValue());
       }
     });
   }
@@ -140,46 +147,66 @@ export class DataService {
   by checking for each volume if it is inside the selected period.
   For the average data, it will check if a similar period exist
   by verifying if the beginning minus one year has a month available. */
-  private initializeData(data: Volume[], beginDate: Date, endingDate: Date) {
+  private initializeData(data: Volume[][], beginDate: Date, endingDate: Date) {
     let set = new Array<ChartDataSets>();
+    let averageSet = new Array<ChartDataSets>();
     let dateSet = new Array<string>();
-    let numbers = new Array<number>();
-    let oneYearBeforeNumbers = new Array<number>();
+    let numbers = new Array<number[]>();
+    let oneYearBeforeNumbers = new Array<number[]>();
 
-    const oneYearBeforePeriodAvailable = data.find(value => moment(beginDate)
+    const firstCategoryData = data[0];
+
+    const oneYearBeforePeriodAvailable = firstCategoryData.find(value => moment(beginDate)
       .subtract(1, 'year').isSame(value.timespan, 'month')) != undefined;
 
-    data.forEach((volume: Volume) => {
+    firstCategoryData.forEach((volume: Volume) => {
 
       /* Add date if in the one year prior period */
       if (oneYearBeforePeriodAvailable) {
         if (moment(volume.timespan).isSameOrAfter(moment(beginDate).subtract(1, 'year'))
           && moment(volume.timespan).isSameOrBefore(moment(endingDate).subtract(1, 'year'))) {
-          oneYearBeforeNumbers.push(volume.volume);
+          data.forEach((vol: Volume[], index) => {
+            const found = vol.find(v => v.timespan == volume.timespan);
+            if (oneYearBeforeNumbers[index] == null)
+              oneYearBeforeNumbers[index] = new Array<number>();
+            oneYearBeforeNumbers[index].push(found != undefined ? found.volume : null);
+          });
         }
       }
 
       /* Add data to the evolution dataset */
       if (moment(volume.timespan).isSameOrAfter(beginDate)
         && moment(volume.timespan).isSameOrBefore(endingDate)) {
-        numbers.push(volume.volume);
+        data.forEach((vol: Volume[], index) => {
+          const found = vol.find(v => v.timespan == volume.timespan);
+          if (numbers[index] == null)
+            numbers[index] = new Array<number>();
+          numbers[index].push(found != undefined ? found.volume : null);
+        });
         dateSet.push(moment(volume.timespan).format('MMMM YYYY'));
       }
     });
-    set.push({ data: numbers, label: this.currentCategorySource.value.name })
+
+    data.forEach((vol: Volume[], index) => {
+      set.push({ data: numbers[index], label: this.currentCategorySource.getValue()[index].name })
+    });
+
 
     this.dataSource.next(set);
     this.dateSource.next(dateSet);
 
     /* Update with the current average data with the calculated data */
     if (oneYearBeforePeriodAvailable) {
-      const avrgThisYear = Math.round(this.getAverage(numbers));
-      const avrgOneYearPrior = Math.round(this.getAverage(oneYearBeforeNumbers));
-      this.averageDataSource.next([{
-        data: [avrgOneYearPrior, avrgThisYear],
-        label: this.currentCategorySource.value.name
-      }]);
+      data.forEach((vol: Volume[], index) => {
+        const avrgThisYear = Math.round(this.getAverage(numbers[index]));
+        const avrgOneYearPrior = Math.round(this.getAverage(oneYearBeforeNumbers[index]));
+        averageSet.push({
+          data: [avrgOneYearPrior, avrgThisYear],
+          label: this.currentCategorySource.value[index].name
+        });
+      });
 
+      this.averageDataSource.next(averageSet);
       const avrgThisPeriod = this.getPeriodString(beginDate, endingDate);
       const avrgOneYearPeriod = this.getPeriodString(moment(beginDate).subtract(1, 'year').toDate(),
         moment(endingDate).subtract(1, 'year').toDate());
@@ -210,8 +237,10 @@ export class DataService {
     this.updateData();
   }
 
-  updateCategory(category: Category) {
-    this.currentCategorySource.next(category);
+  updateCategory(category: Category, oldCategory: Category) {
+    let set = this.currentCategorySource.getValue();
+    set[set.indexOf(oldCategory)] = category;
+    this.currentCategorySource.next(set);
     this.updateData();
   }
 
@@ -219,12 +248,48 @@ export class DataService {
     /* While there is only one category, return the first color of lineChartColors. 
     With multiple colors, find position of Category in the array of current categories, 
     then return the color at the same position in the array */
-    return this.lineChartColors[0];
+    return this.lineChartColors[this.currentCategorySource.getValue().findIndex(x => x.id == category.id)];
+  }
+
+  addCategory() {
+    if (this.currentCategorySource.getValue().length < 3) {
+      this.apiService.getRootCategory().subscribe(data => {
+        const nearest = this.findNearestNonSelected(data);
+        let set = this.currentCategorySource.getValue();
+        set.push(nearest);
+        this.currentCategorySource.next(set);
+        this.updateData();
+
+      });
+    }
+  }
+
+  removeCategory() {
+    if (this.currentCategorySource.getValue().length > 1) {
+      let categories = this.currentCategorySource.getValue();
+      categories.pop();
+      this.currentCategorySource.next(categories);
+      this.updateData();
+    }
+  }
+
+  private findNearestNonSelected(cur: Category): Category {
+    if (this.currentCategorySource.getValue().find(x => x.id == cur.id) == undefined)
+      return cur;
+    else {
+      let found = null;
+      for (var i = 0; i < cur.children.length; i++) {
+        found = this.findNearestNonSelected(cur.children[i]);
+        if (found != null)
+          break;
+      }
+      return found;
+    };
   }
 
   getCurrentUserData(): UserData {
     return new UserData({
-      currentCategory: this.currentCategorySource.getValue(),
+      currentCategories: this.currentCategorySource.getValue(),
       beginDate: this.beginningDateSource.getValue(),
       endDate: this.endingDateSource.getValue()
     });

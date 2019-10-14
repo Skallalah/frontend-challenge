@@ -17,7 +17,7 @@ export class CategoryBlockComponent implements OnInit, OnDestroy {
   constructor(private dataService: DataService) { }
 
   ngOnInit() {
-    this.subscription = this.dataService.currentCategory.subscribe(category => category != null ? this.categories = Array.of(category) : []);
+    this.subscription = this.dataService.currentCategory.subscribe(category => category.length > 0 ? this.categories = category : []);
   }
 
   getColorByCategory(category: Category): Color {
@@ -26,6 +26,14 @@ export class CategoryBlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  addCategory() {
+    this.dataService.addCategory();
+  }
+
+  removeCategory() {
+    this.dataService.removeCategory();
   }
 
 }

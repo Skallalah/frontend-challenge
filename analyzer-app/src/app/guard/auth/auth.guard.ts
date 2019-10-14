@@ -14,7 +14,6 @@ export class AuthGuard implements CanActivate {
   /* Check if the user is currently logged, and if not, redirect him to the login page */
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (this.authService.currentUser) {
-      console.log(this.authService.currentUser);
       return true;
     } else {
       this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
