@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { OnDestroy } from "@angular/core";
+import { DataService } from 'src/app/services/data/data.service';
 
 @Component({
   selector: 'app-login-view',
@@ -24,6 +25,7 @@ export class LoginViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
+    private dataService: DataService,
     private snackBar: MatSnackBar) { }
 
   ngOnInit() {
@@ -48,6 +50,7 @@ export class LoginViewComponent implements OnInit, OnDestroy {
       this.loginForm.controls.password.value)
       .subscribe(
         data => {
+          this.dataService.initializeLaunchData(data);
           this.router.navigate(['/chart']);
         },
         error => {

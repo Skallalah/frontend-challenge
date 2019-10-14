@@ -14,7 +14,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  getCategories(): Observable<Category> {
+  getRootCategory(): Observable<Category> {
     return this.http.get<Category>(this.categoriesApiURL);
   }
 

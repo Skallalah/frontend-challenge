@@ -8,18 +8,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './data-view.component.html',
   styleUrls: ['./data-view.component.css']
 })
-export class DataViewComponent implements OnInit, OnDestroy {
+export class DataViewComponent implements OnInit {
 
   subscription: Subscription;
 
-  constructor(private dataService: DataService, private apiService: ApiService) { }
+  constructor() { }
 
   ngOnInit() {
-    this.subscription = this.apiService.getCategories().subscribe(data => this.dataService.applyCategory(data));
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 
 }

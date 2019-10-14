@@ -23,7 +23,7 @@ export class CategoryTreeComponent implements OnInit, OnDestroy {
   constructor(private _bottomSheetRef: MatBottomSheetRef<CategoryTreeComponent>, private dataService: DataService, private apiService: ApiService) { }
 
   ngOnInit() {
-    this.apiSubscription = this.apiService.getCategories().subscribe(values => {
+    this.apiSubscription = this.apiService.getRootCategory().subscribe(values => {
       this.currentNode = values;
       this.rootNode = values;
     });

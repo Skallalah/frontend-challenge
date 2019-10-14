@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { DataService } from '../data/data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
   private currentUserSource: BehaviorSubject<User> = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
   currentUser = this.currentUserSource.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private dataService: DataService) { }
 
   login(username: string, password: string) {
     return this.http.post<any>('/users/authenticate', { username, password })
@@ -35,7 +36,11 @@ export class AuthService {
 
   logout() {
     // Remove user from local storage to log user out
-    localStorage.removeItem('currentUser');
-    this.currentUserSource.next(null);
+    const currentUser = this.currentUserSource.getValue();
+    if (currentUser) {
+      localStorage.setItem(`data-user-${currentUser.id}`, JSON.stringify(this.dataService.getCurrentUserData()));
+      localStorage.removeItem('currentUser');
+      this.currentUserSource.next(null);
+    }
   }
 }
