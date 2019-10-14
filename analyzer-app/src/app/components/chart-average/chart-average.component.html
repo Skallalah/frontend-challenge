@@ -1,8 +1,7 @@
 <div *ngIf="this.barChartData.length > 0 && this.barChartLabels.length > 0; then hasData else noData"></div>
 <ng-template #hasData>
     <div style="display: block" class='padding-data'>
-        <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-            [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType" [colors]="barChartColors">
+        <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType" [colors]="barChartColors">
         </canvas>
     </div>
 </ng-template>
